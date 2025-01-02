@@ -1,7 +1,6 @@
 <script setup>
 import BaseLayout from "../../Layouts/Base.vue"
-import {ref} from 'vue'
-import { Link, useForm, router } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 
 defineProps({
     canResetPassword: {
@@ -18,18 +17,11 @@ const form = useForm({
     remember: false,
 });
 
-const formState = ref({
-    email: '',
-    password: '',
-    remember: false
-})
-
 const submit = () => {
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
     });
 };
-
 </script>
 
 <template>
@@ -44,39 +36,37 @@ const submit = () => {
                 </div>
 
                 <a-form
-                    ref="formRef"
-                    :model="formState"
                     layout="vertical"
                     required-mark="optional"
                     @submit.prevent="submit"
                     novalidate
                 >
-                    <a-form-item
-                        name="email"
-                        :rules="[{ required: true, type: 'email', message: 'Введите ваш email' }]"
-                    >
+                    <a-form-item>
                         <a-input
-                            v-model:value="formState.email"
+                            v-model:value="form.email"
                             type="email"
                             placeholder="Email"
                             autocomplete="username"
                         />
+                        <div v-if="form.errors.email" class="ant-form-item-explain-error">
+                            {{ form.errors.email }}
+                        </div>
                     </a-form-item>
 
-                    <a-form-item
-                        name="password"
-                        :rules="[{ required: true, message: 'Введите ваш пароль' }]"
-                    >
+                    <a-form-item>
                         <a-input-password
-                            v-model:value="formState.password"
+                            v-model:value="form.password"
                             placeholder="Пароль"
                             autocomplete="current-password"
                         />
+                        <div v-if="form.errors.password" class="ant-form-item-explain-error">
+                            {{ form.errors.password }}
+                        </div>
                     </a-form-item>
 
                     <a-form-item>
                         <div class="flex-between">
-                            <a-checkbox v-model:checked="formState.remember">
+                            <a-checkbox v-model:value="form.remember">
                                 Запомнить меня
                             </a-checkbox>
                             <Link href="/forgot" class="forgot-password">Забыли пароль?</Link>

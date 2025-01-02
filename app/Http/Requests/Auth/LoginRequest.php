@@ -32,6 +32,15 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'email.required' => 'Поле email обязательно для заполнения',
+            'email.email' => 'Введите корректный email',
+            'password.required' => 'Поле пароль обязательно для заполнения',
+        ];
+    }
+
     /**
      * Attempt to authenticate the request's credentials.
      *

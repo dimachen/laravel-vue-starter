@@ -31,7 +31,7 @@ return new class extends Migration
 
         // Таблица для хранения сессий пользователей. Нужна если мы храним сесси в БД
         // Настраивается в config/session.php
-        // 'driver' => env('SESSION_DRIVER', 'database')
+        // 'driver' => env('SESSION_DRIVER', 'file')
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();

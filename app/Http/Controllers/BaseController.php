@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Http\Requests\TestRequest;
+use Illuminate\Support\Facades\Auth;
 
 class BaseController extends Controller
 {
-    function test(TestRequest $request)
-    {
-        return view('test');
-    }
 }

@@ -1,15 +1,22 @@
 <script setup>
-import { Layout } from 'ant-design-vue'
-import { ref } from 'vue'
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
-import { Link } from '@inertiajs/vue3'
+import {Layout} from 'ant-design-vue'
+import {ref} from 'vue'
+import {MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined} from '@ant-design/icons-vue'
+import {Link, usePage, router} from '@inertiajs/vue3'
 
-const { Header, Footer, Content } = Layout
+const {Header, Footer, Content} = Layout
 const collapsed = ref(false)
 
 const toggleCollapsed = () => {
     collapsed.value = !collapsed.value
 }
+
+const user = usePage().props.auth.user; // Получаем данные пользователя из Inertia
+
+const logout = () => {
+    router.post('/logout')
+}
+
 </script>
 
 <template>
@@ -60,46 +67,68 @@ const toggleCollapsed = () => {
                 <!-- Кнопка бургер-меню -->
                 <div class="mobile-menu-trigger">
                     <a-button type="text" @click="toggleCollapsed">
-                        <menu-unfold-outlined v-if="collapsed" />
-                        <menu-fold-outlined v-else />
+                        <menu-unfold-outlined v-if="collapsed"/>
+                        <menu-fold-outlined v-else/>
                     </a-button>
                 </div>
 
                 <div class="auth-buttons desktop-only">
-                    <Link href="/login">
-                        <a-button type="link" class="login-btn">Войти</a-button>
-                    </Link>
-                    <Link href="/register">
-                        <a-button type="primary">Регистрация</a-button>
-                    </Link>
+                    <template v-if="user">
+                        <a-dropdown>
+                            <a class="user-dropdown-link" @click.prevent>
+                                <a-space>
+                                    <UserOutlined/>
+                                    {{ user.name }}
+                                </a-space>
+                            </a>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item key="profile">
+                                        <Link href="/profile">Профиль</Link>
+                                    </a-menu-item>
+                                    <a-menu-item key="logout" @click="logout">
+                                        Выйти
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </template>
+                    <template v-else>
+                        <Link href="/login">
+                            <a-button type="link" class="login-btn">Войти</a-button>
+                        </Link>
+                        <Link href="/register">
+                            <a-button type="primary">Регистрация</a-button>
+                        </Link>
+                    </template>
                 </div>
-            </div>
 
-            <!-- Мобильное меню -->
-            <a-drawer
-                v-model:visible="collapsed"
-                placement="left"
-                :closable="false"
-                class="mobile-menu-drawer"
-            >
-                <a-menu
-                    mode="inline"
-                    :selected-keys="['1']"
-                    class="mobile-menu"
+                <!-- Мобильное меню -->
+                <a-drawer
+                    v-model:visible="collapsed"
+                    placement="left"
+                    :closable="false"
+                    class="mobile-menu-drawer"
                 >
-                    <a-menu-item key="1">Главная</a-menu-item>
-                    <a-menu-item key="mobile-login">
-                        <a-button type="link" block>Войти</a-button>
-                    </a-menu-item>
-                    <a-menu-item key="mobile-register">
-                        <a-button type="primary" block>Регистрация</a-button>
-                    </a-menu-item>
-                </a-menu>
-            </a-drawer>
+                    <a-menu
+                        mode="inline"
+                        :selected-keys="['1']"
+                        class="mobile-menu"
+                    >
+                        <a-menu-item key="1">Главная</a-menu-item>
+                        <a-menu-item key="mobile-login">
+                            <a-button type="link" block>Войти</a-button>
+                        </a-menu-item>
+                        <a-menu-item key="mobile-register">
+                            <a-button type="primary" block>Регистрация</a-button>
+                        </a-menu-item>
+                    </a-menu>
+                </a-drawer>
+            </div>
         </a-layout-header>
 
         <a-layout-content class="content">
-            <slot />
+            <slot/>
         </a-layout-content>
 
         <a-layout-footer class="footer">

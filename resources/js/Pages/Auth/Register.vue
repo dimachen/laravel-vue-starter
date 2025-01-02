@@ -1,15 +1,20 @@
 <script setup>
 import BaseLayout from "../../Layouts/Base.vue"
-import { ref } from 'vue'
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3'
 
-const formState = ref({
+const form = useForm({
+    name: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    name: '',
+    password_confirmation: '',
     agreement: false
-})
+});
+
+const submit = () => {
+    form.post(route('register'), {
+        onFinish: () => form.reset('password', 'password_confirmation'),
+    });
+};
 </script>
 
 <template>
@@ -24,74 +29,64 @@ const formState = ref({
                 </div>
 
                 <a-form
-                    ref="formRef"
-                    :model="formState"
                     layout="vertical"
                     required-mark="optional"
+                    @submit.prevent="submit"
+                    novalidate
                 >
-                    <a-form-item
-                        name="name"
-                        :rules="[{ required: true, message: 'Введите ваше имя' }]"
-                    >
+                    <a-form-item>
                         <a-input
-                            v-model:value="formState.name"
+                            v-model:value="form.name"
                             placeholder="Имя"
                             autocomplete="name"
                         />
+                        <div v-if="form.errors.name" class="ant-form-item-explain-error">
+                            {{ form.errors.name }}
+                        </div>
                     </a-form-item>
 
-                    <a-form-item
-                        name="email"
-                        :rules="[{ required: true, type: 'email', message: 'Введите корректный email' }]"
-                    >
+                    <a-form-item>
                         <a-input
-                            v-model:value="formState.email"
+                            v-model:value="form.email"
                             type="email"
                             placeholder="Email"
                             autocomplete="username"
                         />
+                        <div v-if="form.errors.email" class="ant-form-item-explain-error">
+                            {{ form.errors.email }}
+                        </div>
                     </a-form-item>
 
-                    <a-form-item
-                        name="password"
-                        :rules="[
-                        { required: true, message: 'Введите пароль' },
-                        { min: 8, message: 'Пароль должен содержать минимум 8 символов' }
-                    ]"
-                    >
+                    <a-form-item>
                         <a-input-password
-                            v-model:value="formState.password"
+                            v-model:value="form.password"
                             placeholder="Пароль"
                             autocomplete="new-password"
                         />
+                        <div v-if="form.errors.password" class="ant-form-item-explain-error">
+                            {{ form.errors.password }}
+                        </div>
                     </a-form-item>
 
-                    <a-form-item
-                        name="confirmPassword"
-                        :rules="[
-                        { required: true, message: 'Подтвердите пароль' },
-                        { validator: validateConfirmPassword }
-                    ]"
-                    >
+                    <a-form-item>
                         <a-input-password
-                            v-model:value="formState.confirmPassword"
+                            v-model:value="form.password_confirmation"
                             placeholder="Подтвердите пароль"
                             autocomplete="new-password"
                         />
+                        <div v-if="form.errors.password_confirmation" class="ant-form-item-explain-error">
+                            {{ form.errors.password_confirmation }}
+                        </div>
                     </a-form-item>
 
-<!--                    <a-form-item-->
-<!--                        name="agreement"-->
-<!--                        :rules="[{-->
-<!--                        validator: (rule, value) => value-->
-<!--                            ? Promise.resolve()-->
-<!--                            : Promise.reject('Необходимо принять условия'),-->
-<!--                    }]"-->
-<!--                    >-->
-<!--                        <a-checkbox v-model:checked="formState.agreement">-->
-<!--                            Я согласен с <a-typography-link href="">условиями использования</a-typography-link>-->
-<!--                        </a-checkbox>-->
-<!--                    </a-form-item>-->
+                    <a-form-item>
+                        <a-checkbox v-model:value="form.agreement">
+                            Я согласен с <a-typography-link href="">условиями использования</a-typography-link>
+                        </a-checkbox>
+                        <div v-if="form.errors.agreement" class="ant-form-item-explain-error">
+                            {{ form.errors.agreement }}
+                        </div>
+                    </a-form-item>
 
                     <a-form-item class="no-margin">
                         <a-button
